@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.user_schema import UserCreate, UserLogin, UserPublic
+from app.schemas.user_schema import UserCreate, UserPublic
 from app.core.security import (
     hash_password,
     encrypt_phone,
