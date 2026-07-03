@@ -54,6 +54,7 @@ async def websoket_endpoint(websoket: WebSocket):
                 "from": msg.sender_id,
                 "message": msg.content,
                 "status": msg.status,
+                "created_at": str(msg.created_at)
             }
         )
         db.commit()
@@ -96,6 +97,7 @@ async def websoket_endpoint(websoket: WebSocket):
                         "from": user_id,
                         "message": message_text,
                         "status": new_message.status,
+                        "created_at": str(new_message.created_at)
                     }
                 )
 

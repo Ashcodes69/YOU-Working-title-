@@ -28,7 +28,13 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
     db.add(new_user)
     db.commit()
-    return {"massege": "user created"}
+    db.refresh(new_user)
+    access_token = create_access_token({"sub": user.username})
+    return {
+        "message": "user created",
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
 
     # ============= user login route ================
     # @router.post("/login")
@@ -81,15 +87,25 @@ def search_user(username: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="user not found")
     return user
 
+
+@router.get("/users/{user_id}", response_model=UserPublic)
+def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
 # ================ route to check the users online/ofline status ==========
-@router.get('/users/status/{user_id}')
+@router.get("/users/status/{user_id}")
 def get_user_status(user_id: int):
     if user_id in active_connection:
-        return {'status': 'online'}
-    return {'status': 'ofline'}
+        return {"status": "online"}
+    return {"status": "ofline"}
+
 
 # =============== route to get user last seen ====================
-@router.get('/users/last-seen/{user_id}')
+@router.get("/users/last-seen/{user_id}")
 def get_last_seen(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
-    return {'last_seen': user.last_seen}
+    return {"last_seen": user.last_seen}
